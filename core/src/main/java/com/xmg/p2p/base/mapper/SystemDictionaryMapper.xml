@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmg.p2p.base.mapper.SystemDictionaryMapper" >
+  <resultMap id="BaseResultMap" type="com.xmg.p2p.base.domain.SystemDictionary" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="sn" property="sn" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+  </resultMap>
+  <insert id="insert" parameterType="com.xmg.p2p.base.domain.SystemDictionary" useGeneratedKeys="true" keyProperty="id" >
+    insert into `systemdictionary` (sn, title)
+    values (#{sn,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.xmg.p2p.base.domain.SystemDictionary" >
+    update `systemdictionary`
+    set sn = #{sn,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <sql id="base_column">
+  	id, sn, title
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select <include refid="base_column"/>
+    from `systemdictionary`
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select <include refid="base_column"/>
+    from `systemdictionary`
+  </select>
+  <delete id="delete" parameterType="long">
+  	delete from systemdictionary where id = #{id}
+  </delete>
+  
+  
+  <sql id="base_condition">
+  	<where>
+  		<if test="keyword != null">
+  			AND (sn LIKE concat('%',#{keyword},'%') OR title LIKE concat('%',#{keyword},'%'))
+  		</if>
+  	</where>
+  </sql>
+  <select id="queryDicCount" resultType="int">
+  	select count(id) from systemdictionary <include refid="base_condition"/>
+  </select>
+  <select id="query" resultMap="BaseResultMap">
+  	select <include refid="base_column"/> from systemdictionary <include refid="base_condition"/>
+  	limit #{start},#{pageSize}
+  </select>
+  <!-- 查询出所有数据字典 -->
+  <select id="listAllDics" resultMap="BaseResultMap">
+  	select <include refid="base_column"/> from systemdictionary
+  </select>
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmg.p2p.base.mapper.PaymentScheduleDetailMapper">
+  <resultMap id="BaseResultMap" type="com.xmg.p2p.base.domain.PaymentScheduleDetail">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="bidAmount" jdbcType="DECIMAL" property="bidAmount" />
+    <result column="bidId" jdbcType="BIGINT" property="bidId" />
+    <result column="totalAmount" jdbcType="DECIMAL" property="totalAmount" />
+    <result column="principal" jdbcType="DECIMAL" property="principal" />
+    <result column="interest" jdbcType="DECIMAL" property="interest" />
+    <result column="monthIndex" jdbcType="TINYINT" property="monthIndex" />
+    <result column="deadLine" jdbcType="TIMESTAMP" property="deadLine" />
+    <result column="bidRequestId" jdbcType="BIGINT" property="bidRequestId" />
+    <result column="payDate" jdbcType="TIMESTAMP" property="payDate" />
+    <result column="returnType" jdbcType="TINYINT" property="returnType" />
+    <result column="paymentScheduleId" jdbcType="BIGINT" property="paymentScheduleId" />
+    <result column="investorId" jdbcType="BIGINT" property="investorId" />
+    
+    <association javaType="LoginInfo" property="borrowUser">
+    	<id column="bu_id" property="id" />
+    	<result column="bu_username" property="username" />
+    </association>
+  </resultMap>
+  <insert id="insert" keyProperty="id" parameterType="com.xmg.p2p.base.domain.PaymentScheduleDetail" useGeneratedKeys="true">
+    insert into `paymentscheduledetail` (bidAmount, bidId, totalAmount, 
+      principal, interest, monthIndex, 
+      deadLine, bidRequestId, payDate, 
+      returnType, paymentScheduleId, borrowUser_id,investorId)
+    values (#{bidAmount,jdbcType=DECIMAL}, #{bidId,jdbcType=BIGINT}, #{totalAmount,jdbcType=DECIMAL}, 
+      #{principal,jdbcType=DECIMAL}, #{interest,jdbcType=DECIMAL}, #{monthIndex,jdbcType=TINYINT}, 
+      #{deadLine,jdbcType=TIMESTAMP}, #{bidRequestId,jdbcType=BIGINT}, #{payDate,jdbcType=TIMESTAMP}, 
+      #{returnType,jdbcType=TINYINT}, #{paymentScheduleId,jdbcType=BIGINT}, #{borrowUser.id,jdbcType=BIGINT}, 
+      #{investorId,jdbcType=BIGINT})
+  </insert>
+  
+  <sql id="base_column">
+  	p.id, p.bidAmount, p.bidId, p.totalAmount, p.principal, p.interest, p.monthIndex, p.deadLine, 
+    p.bidRequestId, p.payDate, p.returnType, p.paymentScheduleId,p.investorId,
+    bu.id as bu_id,bu.username as bu_username
+  </sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select <include refid="base_column" />
+    from `paymentscheduledetail` p join logininfo bu on p.borrowUser_id=bu.id
+    where p.id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="selectByPaymentSchedule" resultMap="BaseResultMap">
+    select <include refid="base_column" />
+    from `paymentscheduledetail` p join logininfo bu on p.borrowUser_id=bu.id
+    where p.paymentScheduleId = #{id}
+  </select>
+  
+</mapper>

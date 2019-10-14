@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmg.p2p.base.mapper.VedioAuthMapper" >
+  <resultMap id="BaseResultMap" type="com.xmg.p2p.base.domain.VedioAuth" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="state" property="state" jdbcType="TINYINT" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="auditTime" property="auditTime" jdbcType="TIMESTAMP" />
+    <result column="applyTime" property="applyTime" jdbcType="TIMESTAMP" />
+    
+    <association property="applier" javaType="LoginInfo">
+    	<id column="applier_id" property="id"/>
+    	<result column="applier_username" property="username"/>
+    </association>
+    <association property="auditor" javaType="LoginInfo">
+    	<id column="auditor_id" property="id"/>
+    	<result column="auditor_username" property="username"/>
+    </association>
+  </resultMap>
+  <insert id="insert" parameterType="com.xmg.p2p.base.domain.VedioAuth" useGeneratedKeys="true" keyProperty="id" >
+    insert into `vedioauth` (state, remark, auditTime,applyTime, auditor_id, applier_id)
+    values (#{state,jdbcType=TINYINT}, #{remark,jdbcType=VARCHAR}, #{auditTime,jdbcType=TIMESTAMP}, 
+      #{applyTime,jdbcType=TIMESTAMP}, #{auditor.id,jdbcType=BIGINT}, #{applier.id,jdbcType=BIGINT})
+  </insert>
+  <sql id="base_column">
+  	v.id, v.state, v.remark, v.auditTime, v.applyTime,
+    au.id as auditor_id,au.username as auditor_username,ap.id as applier_id,ap.username as applier_username
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select <include refid="base_column"/>
+    from `vedioauth` v 
+    join logininfo ap on v.applier_id=ap.id 
+    join logininfo au on v.auditor_id=au.id
+    where v.id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select <include refid="base_column"/>
+    from `vedioauth` v 
+    join logininfo ap on v.applier_id=ap.id 
+    join logininfo au on v.auditor_id=au.id
+  </select>
+  
+  <!-- 高级查询 -->
+  <sql id="base_condition">
+  	<where>
+  		<if test="state>-1">
+  			AND v.state=#{state}
+  		</if>
+  		<if test="beginDate != null">
+  			AND v.beginDate &gt;=#{beginDate}
+  		</if>
+  		<if test="endDate!=null">
+  			AND v.endDate &lt;=#{endDate}
+  		</if>
+  	</where>
+  </sql>
+  <select id="queryVedioAuthCount" resultType="int">
+  	select count(v.id) from vedioauth v
+  	<include refid="base_condition"/>
+  </select>
+  <select id="query" resultMap="BaseResultMap">
+  	select <include refid="base_column"/> from vedioauth v
+  	join logininfo ap on v.applier_id=ap.id 
+    join logininfo au on v.auditor_id=au.id
+  	<include refid="base_condition"/>
+  	limit #{start},#{pageSize}
+  </select>
+  
+  <!-- 自动补全查询 -->
+  <select id="autoComplete" resultType="hashmap">
+  	select id,username from logininfo where username like concat(#{keyword},"%")
+  </select>
+</mapper>

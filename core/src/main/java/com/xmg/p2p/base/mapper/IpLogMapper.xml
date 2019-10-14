@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmg.p2p.base.mapper.IpLogMapper" >
+  <resultMap id="BaseResultMap" type="com.xmg.p2p.base.domain.IpLog" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="loginState" property="loginState" jdbcType="TINYINT" />
+    <result column="loginTime" property="loginTime" jdbcType="TIMESTAMP" />
+    <result column="userType" property="userType" />
+  </resultMap>
+  <insert id="insert" parameterType="com.xmg.p2p.base.domain.IpLog" useGeneratedKeys="true" keyProperty="id" >
+    insert into `iplog` (ip, username, loginState,loginTime,userType)
+    values (#{ip,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{loginState,jdbcType=TINYINT}, 
+      #{loginTime,jdbcType=TIMESTAMP},#{userType})
+  </insert>
+  
+  <sql id="base_column">
+  	id,ip,username,loginState,loginTime,userType
+  </sql>
+  <sql id="base_condition">
+  	<where>
+  		<if test="beginDate!=null">
+  			AND loginTime &gt;= #{beginDate}
+  		</if>
+  		<if test="endDate!=null">
+  			AND loginTime &lt;= #{endDate}
+  		</if>
+  		<if test="loginState>-1">
+  			AND loginState = #{loginState}
+  		</if>
+  		<if test="username!=null">
+  			AND username = #{username}
+  		</if>
+  		<if test="userType>-1">
+  			AND userType = #{userType}
+  		</if>
+  	</where>
+  </sql>
+  <!-- 数据的总条数 -->
+  <select id="queryLogCount" resultType="int">
+  	select count(id) from iplog <include refid="base_condition"/>
+  </select>
+  <!-- 高级查询 -->
+  <select id="query" resultMap="BaseResultMap">
+  	select <include refid="base_column"/> 
+  	from iplog <include refid="base_condition"/>
+  	ORDER BY loginTime DESC
+  	limit #{start},#{pageSize}
+  </select>
+</mapper>

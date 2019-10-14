@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmg.p2p.base.mapper.EmailVerifyMapper" >
+  <resultMap id="BaseResultMap" type="com.xmg.p2p.base.domain.EmailVerify" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="userinfo_id" property="userInfoId" jdbcType="BIGINT" />
+    <result column="email" property="email"/>
+    <result column="sendEmailDate" property="sendEmailDate" jdbcType="TIMESTAMP" />
+    <result column="randomcode" property="randomcode" jdbcType="VARCHAR" />
+  </resultMap>
+  <insert id="insert" parameterType="com.xmg.p2p.base.domain.EmailVerify" useGeneratedKeys="true" keyProperty="id" >
+    insert into `mailverify` (userinfo_id,email,sendEmailDate, randomcode)
+    values (#{userInfoId,jdbcType=BIGINT},#{email},#{sendEmailDate,jdbcType=TIMESTAMP}, #{randomcode,jdbcType=VARCHAR}
+      )
+  </insert>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, userinfo_id,email,sendEmailDate, randomcode
+    from `mailverify`
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectByRandomCode" resultMap="BaseResultMap">
+  	select id, userinfo_id,email,sendEmailDate, randomcode
+    from `mailverify`
+    where randomcode = #{randomcode}
+  </select>
+</mapper>

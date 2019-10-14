@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmg.p2p.business.mapper.BidMapper" >
+  <resultMap id="BaseResultMap" type="com.xmg.p2p.business.domain.Bid" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="actualRate" property="actualRate" jdbcType="DECIMAL" />
+    <result column="availableAmount" property="availableAmount" jdbcType="DECIMAL" />
+    <result column="bidrequest_id" property="bidRequestId" jdbcType="BIGINT" />
+    <result column="bidTime" property="bidTime" jdbcType="TIMESTAMP" />
+    <result column="bidRequestTitle" property="bidRequestTitle" jdbcType="VARCHAR" />
+    
+    <association property="bidUser" javaType="LoginInfo">
+    	<id column="l_id" property="id"/>
+    	<result column="l_username" property="username"/>
+    </association>
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.xmg.p2p.business.domain.Bid" useGeneratedKeys="true" keyProperty="id" >
+    insert into `bid` (actualRate, availableAmount, bidrequest_id,bidUser_id, bidTime, bidRequestTitle)
+    values (#{actualRate,jdbcType=DECIMAL}, #{availableAmount,jdbcType=DECIMAL}, #{bidRequestId,jdbcType=BIGINT}, 
+      #{bidUser.id,jdbcType=BIGINT}, #{bidTime,jdbcType=TIMESTAMP}, #{bidRequestTitle,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="updateByPrimaryKey" parameterType="com.xmg.p2p.business.domain.Bid" >
+    update `bid`
+    set actualRate = #{actualRate,jdbcType=DECIMAL},
+      availableAmount = #{availableAmount,jdbcType=DECIMAL},
+      bidrequest_id = #{bidRequestId,jdbcType=BIGINT},
+      bidUser_id = #{bidUser.id,jdbcType=BIGINT},
+      bidTime = #{bidTime,jdbcType=TIMESTAMP},
+      bidRequestTitle = #{bidRequestTitle,jdbcType=VARCHAR}}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <sql id="base_column">
+  	b.id, b.actualRate, b.availableAmount, b.bidrequest_id, b.bidTime, b.bidRequestTitle,
+    l.id as l_id,l.username as l_username
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select <include refid="base_column"/>
+    from `bid` b join logininfo l on b.bidUser_id=l.id
+    where b.id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select <include refid="base_column"/>
+    from `bid` b join logininfo l on b.bidUser_id=l.id
+  </select>
+  
+  <!-- 根据标的id查询出所有的投标人 -->
+  <select id="selectBidsByBidRequest" resultMap="BaseResultMap">
+  	select <include refid="base_column"/> 
+  	from bid b join logininfo l on b.bidUser_id=l.id
+  	where b.bidrequest_id=#{bidRequestId}
+  </select>
+</mapper>

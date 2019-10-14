@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmg.p2p.base.mapper.UserInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.xmg.p2p.base.domain.UserInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="bitState" property="bitState" jdbcType="BIGINT" />
+    <result column="realName" property="realName" jdbcType="VARCHAR" />
+    <result column="idNumber" property="idNumber" jdbcType="VARCHAR" />
+    <result column="phoneNumber" property="phoneNumber" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR"/>
+    <result column="creditBorrowScore" property="creditBorrowScore"/>
+    <result column="realAuth_id" property="realAuthId"/>
+    
+    <association column="incomeGrade_id" property="incomeGrade" javaType="SystemDictionaryItem" select="com.xmg.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+    <association column="marriage_id" property="marriage" javaType="SystemDictionaryItem" select="com.xmg.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+    <association column="kidCount_id" property="kidCount" javaType="SystemDictionaryItem" select="com.xmg.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+    <association column="educationBackground_id" property="educationBackground" javaType="SystemDictionaryItem" select="com.xmg.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+    <association column="houseCondition_id" property="houseCondition" javaType="SystemDictionaryItem" select="com.xmg.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from `userinfo`
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmg.p2p.base.domain.UserInfo">
+    insert into `userinfo` (id,version, bitState, realName, 
+      idNumber, phoneNumber,email,creditBorrowScore,realAuth_id,
+      incomeGrade_id, marriage_id, kidCount_id, educationBackground_id, 
+      houseCondition_id)
+    values (#{id},0,#{bitState,jdbcType=BIGINT}, #{realName,jdbcType=VARCHAR}, 
+      #{idNumber,jdbcType=VARCHAR}, #{phoneNumber,jdbcType=VARCHAR},#{email},#{creditBorrowScore},#{realAuthId}, 
+      #{incomeGrade.id,jdbcType=BIGINT},#{marriage.id,jdbcType=BIGINT}, #{kidCount.id,jdbcType=BIGINT},
+      #{educationBackground.id,jdbcType=BIGINT}, 
+      #{houseCondition.id,jdbcType=BIGINT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.xmg.p2p.base.domain.UserInfo" >
+    update `userinfo`
+    set version = version+1,
+    bitState = #{bitState,jdbcType=BIGINT},
+    realName = #{realName,jdbcType=VARCHAR},
+    idNumber = #{idNumber,jdbcType=VARCHAR},
+    phoneNumber = #{phoneNumber,jdbcType=VARCHAR},
+    email = #{email},
+    creditBorrowScore = #{creditBorrowScore},
+    realAuth_id = #{realAuthId},
+    incomeGrade_id = #{incomeGrade.id,jdbcType=BIGINT},
+    marriage_id = #{marriage.id,jdbcType=BIGINT},
+    kidCount_id = #{kidCount.id,jdbcType=BIGINT},
+    educationBackground_id = #{educationBackground.id,jdbcType=BIGINT},
+    houseCondition_id = #{houseCondition.id,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT} and version = #{version}
+  </update>
+  <sql id="base_column">
+  	id, version, bitState, realName, idNumber, phoneNumber,email,creditBorrowScore,realAuth_id,incomeGrade_id, marriage_id, 
+    kidCount_id, educationBackground_id, houseCondition_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select <include refid="base_column"/>
+    from `userinfo`
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+</mapper>

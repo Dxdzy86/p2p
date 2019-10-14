@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmg.p2p.base.mapper.PlatformBankInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.xmg.p2p.base.domain.PlatformBankInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="bankName" property="bankName" jdbcType="VARCHAR" />
+    <result column="accountName" property="accountName" jdbcType="VARCHAR" />
+    <result column="bankNumber" property="bankNumber" jdbcType="VARCHAR" />
+    <result column="bankForkName" property="bankForkName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from `platformbankinfo`
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <insert id="insert" parameterType="com.xmg.p2p.base.domain.PlatformBankInfo" useGeneratedKeys="true" keyProperty="id" >
+    insert into `platformbankinfo` (bankName, accountName, bankNumber,bankForkName)
+    values (#{bankName,jdbcType=VARCHAR}, #{accountName,jdbcType=VARCHAR}, #{bankNumber,jdbcType=VARCHAR}, 
+      #{bankForkName,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="updateByPrimaryKey" parameterType="com.xmg.p2p.base.domain.PlatformBankInfo" >
+    update `platformbankinfo`
+    set bankName = #{bankName,jdbcType=VARCHAR},
+      accountName = #{accountName,jdbcType=VARCHAR},
+      bankNumber = #{bankNumber,jdbcType=VARCHAR},
+      bankForkName = #{bankForkName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, bankName, accountName, bankNumber, bankForkName
+    from `platformbankinfo`
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, bankName, accountName, bankNumber, bankForkName
+    from `platformbankinfo`
+  </select>
+  
+  <select id="queryPlatformBankInfoCount" resultType="int">
+  	select count(id) from platformbankinfo
+  </select>
+  
+  <select id="query" resultMap="BaseResultMap">
+  	select id, bankName, accountName, bankNumber, bankForkName from platformbankinfo
+  </select>
+</mapper>
